@@ -81,6 +81,18 @@ body {
   }
 }
 
+.embedded-legacy-view {
+  .ic-app-header {
+    display: none;
+  }
+  #wrapper {
+    margin-left: 0;
+  }
+  #footer {
+    display: none;
+  }
+}
+
 // **********************************************************************************
 // end classes applied to body
 

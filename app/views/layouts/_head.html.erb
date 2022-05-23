@@ -18,6 +18,35 @@
 -%><!DOCTYPE html>
 <html class="scripts-not-loaded" dir="<%= I18n.rtl? ? 'rtl' : 'ltr' %>"   lang=<%= raw I18n.locale.to_json %>>
 <head>
+  <script>
+    if (self !== top) {
+      const htmlEl = document.documentElement;
+      htmlEl.classList.add("embedded-legacy-view");
+      top.postMessage({
+        type: "remix-run:iframe-loaded",
+        path: location.pathname + location.search,
+        showLayout: <%= !body_classes.join.include?("ic-Login-Body") %>,
+        // TODO: send more data up, e.g. current page title
+      }, "*");
+      htmlEl.addEventListener("click", function(e) {
+        const el = e.target;
+        if (el.tagName === "A" && !el.target && el.href && el.href.startsWith(location.origin)) {
+          if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            // TODO: hostname mappings for other environments
+            const win = window.open(el.href.replace(/localhost:3001/, 'localhost:3000'), "_blank");
+            if (win) win.focus();
+          } else {
+            const url = new URL(el.href);
+            top.postMessage({
+              type: "remix-run:iframe-navigate",
+              path: url.pathname + url.search,
+            }, "*")
+          }
+        }
+      });
+    }
+  </script>
   <meta charset="utf-8">
   <% if @sentry_trace.present? %>
   <meta name="sentry-trace" content="<%= @sentry_trace %>"/>
